@@ -1,15 +1,15 @@
-Here's a rewritten version of your `README.md` file. It's cleaner, more concise, and formatted for clarity while keeping all key details:
-
----
-![alt text](images/Screenshot_3-7-2025_232616_127.0.0.1.jpeg) 
-![alt text](images/Screenshot_3-7-2025_232842_127.0.0.1.jpeg) 
-![alt text](images/Screenshot_3-7-2025_232952_127.0.0.1.jpeg) 
-![alt text](images/Screenshot_3-7-2025_233219_127.0.0.1.jpeg) 
-![alt text](images/Screenshot_3-7-2025_233234_127.0.0.1.jpeg) 
-![alt text](images/Screenshot_3-7-2025_233248_127.0.0.1.jpeg)
 # AI Story Generator with Flask 📚✨
 
 A feature-rich Flask web app powered by GPT-2, designed to turn your story prompts into full-length narratives. Includes user accounts, story enhancement tools, export options, and a creative dashboard.
+
+## 📸 Screenshots
+
+![Story generator home page](images/Screenshot_3-7-2025_232616_127.0.0.1.jpeg)
+![Story generator screenshot 2](images/Screenshot_3-7-2025_232842_127.0.0.1.jpeg)
+![Story generator screenshot 3](images/Screenshot_3-7-2025_232952_127.0.0.1.jpeg)
+![Story generator screenshot 4](images/Screenshot_3-7-2025_233219_127.0.0.1.jpeg)
+![Story generator screenshot 5](images/Screenshot_3-7-2025_233234_127.0.0.1.jpeg)
+![Story generator screenshot 6](images/Screenshot_3-7-2025_233248_127.0.0.1.jpeg)
 
 ## 🚀 Features
 
@@ -30,8 +30,7 @@ A feature-rich Flask web app powered by GPT-2, designed to turn your story promp
 ### 📦 Export & Community
 
 * **PDF Export** for beautifully formatted downloads
-* **Story Collections**: Organize and manage favorites
-* **Community Hub**: Browse stories from other users
+* **Community Hub**: Browse stories other users have made public
 
 ### ✨ Creative Toolbox
 
@@ -81,14 +80,15 @@ Visit [http://localhost:5000](http://localhost:5000)
 ## 📚 Project Structure
 
 ```
-flask-story-generator/
+AI-Story-Generator/
 ├── app.py               # Main application
 ├── requirements.txt     # Dependencies
 ├── setup.bat            # Windows setup
-├── models/              # GPT-2 model files
 ├── templates/           # HTML UI
 ├── static/              # CSS & JS
-└── stories.db           # SQLite database (auto-generated)
+├── images/              # README screenshots
+├── models/              # GPT-2 model files (downloaded on first run)
+└── stories.db           # SQLite database (created on first run)
 ```
 
 ---
@@ -136,7 +136,7 @@ self.models_dir = "./models"
 ### Secret Key (update for production)
 
 ```python
-app.secret_key = 'your-secure-secret-key-here'
+app.secret_key = 'your-secret-key-change-this'  # replace with a long random value
 ```
 
 ---
@@ -147,14 +147,14 @@ app.secret_key = 'your-secure-secret-key-here'
 
 **Users**: id, username, email, password\_hash, created\_at
 **Stories**: id, user\_id, title, prompt, story, genre, word\_count, rating, created\_at, is\_public
-**Favorites**: id, user\_id, story\_id, created\_at
+**Favorites**: id, user\_id, story\_id, created\_at (table is created, but no favorites feature uses it yet)
 
 ---
 
 ## 🛠 Troubleshooting
 
 * **Model Download Fails**: Retry or check disk/internet
-* **CUDA Issues**: Runs on CPU by default
+* **CUDA Issues**: The GPU is used automatically when CUDA is available; otherwise the app runs on CPU
 * **Port Conflicts**: Change port in `app.py`
 * **DB Errors**: Delete `stories.db` to reset
 
@@ -174,12 +174,6 @@ Improvements welcome:
 * UI/UX enhancements
 * Collaborative storytelling
 * Mobile support
-
----
-
-## 📃 License
-
-Licensed under the MIT License.
 
 ---
 
@@ -204,7 +198,3 @@ Having issues?
 ---
 
 **✨ Let your creativity run wild. Build worlds with AI. Happy writing!**
-
----
-
-Let me know if you'd like this in a downloadable format or if you'd like a short version for GitHub!
