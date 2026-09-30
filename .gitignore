@@ -1,0 +1,8 @@
+# Created on first run
+stories.db
+models/
+
+# Python
+venv/
+__pycache__/
+*.pyc
