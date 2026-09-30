@@ -1,200 +1,103 @@
-# AI Story Generator with Flask 📚✨
+# AI Story Generator
 
-A feature-rich Flask web app powered by GPT-2, designed to turn your story prompts into full-length narratives. Includes user accounts, story enhancement tools, export options, and a creative dashboard.
+![Python](https://img.shields.io/badge/Python-3.9%2B-3776AB?logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-000000?logo=flask&logoColor=white)
+![Hugging Face Transformers](https://img.shields.io/badge/Transformers-GPT--2%20Medium-FFD21E?logo=huggingface&logoColor=black)
 
-## 📸 Screenshots
+A Flask web app that turns a short prompt into a story using GPT-2 Medium, running locally on your own machine. You pick a genre and tune how creative the output is, then extend the story, rewrite it in a different style, or generate alternative endings. Signed-in users get their stories saved and can share them with others.
 
-![Story generator home page](images/Screenshot_3-7-2025_232616_127.0.0.1.jpeg)
-![Story generator screenshot 2](images/Screenshot_3-7-2025_232842_127.0.0.1.jpeg)
-![Story generator screenshot 3](images/Screenshot_3-7-2025_232952_127.0.0.1.jpeg)
-![Story generator screenshot 4](images/Screenshot_3-7-2025_233219_127.0.0.1.jpeg)
-![Story generator screenshot 5](images/Screenshot_3-7-2025_233234_127.0.0.1.jpeg)
-![Story generator screenshot 6](images/Screenshot_3-7-2025_233248_127.0.0.1.jpeg)
+![Home page](images/Screenshot_3-7-2025_232616_127.0.0.1.jpeg)
 
-## 🚀 Features
+<details>
+<summary>More screenshots</summary>
 
-### 🤖 AI Story Writing
+![Screenshot 2](images/Screenshot_3-7-2025_232842_127.0.0.1.jpeg)
+![Screenshot 3](images/Screenshot_3-7-2025_232952_127.0.0.1.jpeg)
+![Screenshot 4](images/Screenshot_3-7-2025_233219_127.0.0.1.jpeg)
+![Screenshot 5](images/Screenshot_3-7-2025_233234_127.0.0.1.jpeg)
+![Screenshot 6](images/Screenshot_3-7-2025_233248_127.0.0.1.jpeg)
 
-* **Powered by GPT-2 Medium**
-* **Genre Selection**: Fantasy, Sci-fi, Romance, Mystery, Horror, Adventure, Comedy
-* **Custom Settings**: Control length, creativity (temperature), and coherence (top\_p)
-* **Story Enhancer**: Add more depth, emotion, or action
-* **Alternative Endings**: Create multiple outcomes for a story
+</details>
 
-### 👤 User Accounts
+## Features
 
-* Register, login, and manage stories securely
-* Save stories privately or share with the community
-* View genre preferences and story stats
+- **Story generation** with GPT-2 Medium (355M parameters) through the Hugging Face `text-generation` pipeline.
+- **Seven genres:** fantasy, sci-fi, mystery, romance, horror, adventure and comedy. Each one adds a genre-specific opening line to your prompt.
+- **Generation controls:** length (up to 1,000 tokens), temperature and top-p.
+- **Story enhancer:** rewrites a story with more detail, dialogue, emotion or action.
+- **Alternative endings:** up to five endings, each generated at a slightly different temperature for variety.
+- **Random prompt generator** for when you need an idea.
+- **Accounts:** register and log in (passwords hashed with Werkzeug). Stories generated while logged in are saved to SQLite and can be kept private or made public.
+- **Community page** listing the latest public stories, and per-user stats (story count, total and average word count, stories per genre).
+- **PDF export** of any saved story (ReportLab).
 
-### 📦 Export & Community
+## How it works
 
-* **PDF Export** for beautifully formatted downloads
-* **Community Hub**: Browse stories other users have made public
+```
+Browser (HTML/CSS/JS) ──► Flask routes ──► StoryGenerator ──► GPT-2 Medium (transformers + PyTorch)
+                                │
+                                └──► SQLite (users, stories)
+```
 
-### ✨ Creative Toolbox
+On first start the app downloads GPT-2 Medium from Hugging Face and saves it to `models/gpt2_medium/`, so later starts load it from disk. It uses the GPU automatically when CUDA is available and the CPU otherwise.
 
-* **Prompt Generator**
-* **Writing Analytics** (word count, genre distribution)
-* **Model Status Monitor**
+## Getting started
 
----
+**Requirements:** Python 3.9 or newer, about 2 GB of free RAM, and roughly 1.5 GB of disk space for the model. The first run needs an internet connection to download it.
 
-## 🛠️ Installation
+### Windows (one step)
 
-### Prerequisites
-
-* Python 3.7+
-* `pip` installed
-
-### Quick Start (Windows)
-
-```bash
-# Clone/download the project and run
+```bat
 setup.bat
 ```
 
-This sets up a virtual environment, installs dependencies, launches the app, and opens your browser.
+This creates a virtual environment, installs the dependencies, starts the server and opens http://127.0.0.1:5000 in your browser.
 
-### Manual Setup (All Platforms)
+### Any platform
 
 ```bash
 python -m venv venv
-# Activate
-# Windows:
-venv\Scripts\activate
-# macOS/Linux:
-source venv/bin/activate
-
-# Install packages
+source venv/bin/activate        # Windows: venv\Scripts\activate
 pip install -r requirements.txt
-
-# Run app
 python app.py
 ```
 
-Visit [http://localhost:5000](http://localhost:5000)
+Then open http://localhost:5000. The first start is slow while the model downloads.
 
----
+## API
 
-## 📚 Project Structure
+| Method | Route | Purpose |
+|--------|-------|---------|
+| `POST` | `/generate` | Generate a story from `prompt`, with optional `genre`, `max_length`, `temperature`, `top_p` |
+| `POST` | `/enhance` | Rewrite `story` with `type` = `detail`, `dialogue`, `emotion` or `action` |
+| `POST` | `/multiple-endings` | Generate `num_endings` (max 5) endings for `story` |
+| `GET` | `/random-prompt` | Random story prompt |
+| `POST` | `/register`, `/login`, `/logout` | Account management |
+| `GET` | `/my-stories`, `/public-stories`, `/story-stats` | Saved stories and stats |
+| `GET` | `/export-pdf/<story_id>` | Download a story as PDF |
+| `GET` | `/model-info`, `/health` | Model location/size and health check |
+
+## Project structure
 
 ```
 AI-Story-Generator/
-├── app.py               # Main application
-├── requirements.txt     # Dependencies
-├── setup.bat            # Windows setup
-├── templates/           # HTML UI
-├── static/              # CSS & JS
-├── images/              # README screenshots
-├── models/              # GPT-2 model files (downloaded on first run)
-└── stories.db           # SQLite database (created on first run)
+├── app.py            # Flask app, StoryGenerator class, database helpers, routes
+├── templates/        # index.html
+├── static/           # css/styles.css, js/app.js
+├── images/           # README screenshots
+├── requirements.txt
+└── setup.bat         # Windows setup-and-run script
 ```
 
----
+`models/` and `stories.db` are created on first run.
 
-## 🧪 API Overview
+## Limitations
 
-### Story APIs
+- GPT-2 Medium is a 2019 model, so stories can drift off topic or repeat themselves, especially at high temperature or long lengths.
+- On CPU a story takes a few seconds or more to generate.
+- The secret key in `app.py` (`app.secret_key`) is a placeholder and the server runs in debug mode, so this setup is for local use only. Set a real secret key and turn off debug mode before deploying it anywhere.
+- The database has a `favorites` table, but no feature uses it yet.
 
-* `POST /generate` – Create a new story
-* `POST /enhance` – Add improvements
-* `POST /multiple-endings` – Generate alternate endings
+## Tech stack
 
-### User APIs
-
-* `POST /register`, `POST /login`, `POST /logout`
-
-### Story Management
-
-* `GET /my-stories`, `GET /public-stories`, `GET /story-stats`
-
-### Utilities
-
-* `GET /random-prompt`, `GET /model-info`, `GET /health`, `GET /export-pdf/<story_id>`
-
----
-
-## 🧩 Dependencies
-
-```text
-Flask, torch, transformers, reportlab, numpy, tokenizers,
-huggingface-hub, accelerate, protobuf, requests, Pillow, Werkzeug
-```
-
----
-
-## ⚙️ Configuration
-
-### Model Setup
-
-```python
-self.model_name = "gpt2-medium"
-self.models_dir = "./models"
-```
-
-### Secret Key (update for production)
-
-```python
-app.secret_key = 'your-secret-key-change-this'  # replace with a long random value
-```
-
----
-
-## 🧾 Database Overview
-
-### Tables
-
-**Users**: id, username, email, password\_hash, created\_at
-**Stories**: id, user\_id, title, prompt, story, genre, word\_count, rating, created\_at, is\_public
-**Favorites**: id, user\_id, story\_id, created\_at (table is created, but no favorites feature uses it yet)
-
----
-
-## 🛠 Troubleshooting
-
-* **Model Download Fails**: Retry or check disk/internet
-* **CUDA Issues**: The GPU is used automatically when CUDA is available; otherwise the app runs on CPU
-* **Port Conflicts**: Change port in `app.py`
-* **DB Errors**: Delete `stories.db` to reset
-
-### Performance Tips
-
-* First run may be slow (model loading)
-* Lower `max_length` for faster results
-* Use GPU for significant speed boost
-
----
-
-## 🤝 Contributing
-
-Improvements welcome:
-
-* Add new models or genres
-* UI/UX enhancements
-* Collaborative storytelling
-* Mobile support
-
----
-
-## 📞 Support
-
-Having issues?
-
-* Recheck installation steps
-* Review terminal errors
-* Ensure Python 3.7+ is installed
-* All dependencies installed?
-
----
-
-## 🧠 Technical Info
-
-* **Model**: GPT-2 Medium (355M parameters)
-* **Frameworks**: Flask + Hugging Face Transformers
-* **Storage**: Local (500MB model, \~2GB RAM use)
-* **Performance**: \~2–10s per generation
-
----
-
-**✨ Let your creativity run wild. Build worlds with AI. Happy writing!**
+Python, Flask, Hugging Face Transformers, PyTorch, SQLite, ReportLab, HTML/CSS/JavaScript.
